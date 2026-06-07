@@ -12,7 +12,7 @@ import RoadmapCard from "./RoadmapCard.jsx";
 import ShapChart from "./ShapChart.jsx";
 import PortfolioGenerator from "./PortfolioGenerator.jsx";
 import DownloadReport from "./DownloadReport.jsx";
-import { analyzeFinance, forecastFinance } from "../services/api";
+import { analyzeFinance, forecastFinance, getApiErrorMessage } from "../services/api";
 
 export default function Dashboard({ onAnalyze }) {
   const [score, setScore] = useState(null);
@@ -57,10 +57,10 @@ export default function Dashboard({ onAnalyze }) {
         const f = await forecastFinance({ income: fd.income, expenses: fd.expenses, months: 6 });
         setForecast(f.data.forecast ?? []);
       } catch (fErr) {
-        setForecastError(fErr?.response?.data?.detail?.[0]?.msg || "Forecast failed.");
+        setForecastError(getApiErrorMessage(fErr, "Forecast unavailable right now."));
       }
     } catch (err) {
-      setError(err?.response?.data?.detail?.[0]?.msg || "Unable to analyze. Ensure backend is running on port 8000.");
+      setError(getApiErrorMessage(err, "Analysis unavailable right now. Please try again."));
     } finally { setLoading(false); }
   };
 
